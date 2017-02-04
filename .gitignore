@@ -1,0 +1,4 @@
+# Don't want to accidentally add generated code
+*.rs
+*.go
+*.hs
