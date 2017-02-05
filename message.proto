@@ -3,52 +3,61 @@ syntax = "proto3";
 service Communicator {
   // Request to start a conversation
   rpc InitiateConversation (ConversationControlRequest) returns (ConversationControlReply);
-  // Request to en a conversation
+  // Request to end a conversation
   rpc TerminateConversation (ConversationControlRequest) returns (ConversationControlReply);
-  // Add a message to the given conversation
-  rpc SendMessage (MessageRequest) returns (MessageResponse);
-  // Refresh the current conversation
-  rpc UpdateConversation (UpdateRequest) returns (UpdateResponse);
+  // Bi-directional stream opened for message transaction.
+  // Thinking will just have this open for each conversation
+  rpc SendMessage (stream MessageRequest) returns (stream MessageReply);
 }
 
 message ConversationControlRequest {
+  // Address of the requesting client
   Address address = 1;
-  // HACK Maybe the name of the user to connect to
-  string receipient = 2;
+  // User client wishes to start conversation with
+  User receipient = 2;
 }
 
 message ConversationControlReply {
+  // Success of initialization of conversation
   bool success = 1;
+  // Allocated ID for the conversation
   uint32 conversationId = 2;
 }
 
 message MessageRequest {
+  // Address of the requesting client
   Address address = 1;
   // Message to add to the conversation
   string message = 2;
+  // ID of the conversation wishing to add to
   uint32 conversationId = 3;
 }
 
-message MessageResponse {
+message MessageReply {
+  // Success of the message being added to conversation
+  // FIXME Not sure of its worth now that it is to be a stream, when no request
+  // was made was is the expected value of this?
   bool success = 1;
-  // Perhaps they have gone out of sync
-  // TODO May not be relevant, depends on how users keep up to date
-  bool requireUpdate = 2;
+  // Stream of the messages written by others
+  repeated Message messages = 2;
 }
 
-message UpdateRequest {
-  Address address = 1;
-  uint32 conversationId = 2;
-}
+// NOTE the below are basically type aliasing but will allow for extra data to
+// added easily if needed.
 
-message UpdateResponse {
-  bool success = 1;
-  repeated string messages = 2;
-}
-
-// Will define this separately incase we get a better way to identify
 // Address of the requestor
 message Address {
   // Just perhaps the ip address
   string address = 1;
+}
+
+// Construct for defining a user of the communicator
+message User {
+  string name = 1;
+}
+
+// Message construct to determine who has sent the message and its content
+message Message {
+  User user = 1;
+  string content = 2;
 }
