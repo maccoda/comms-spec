@@ -2,26 +2,38 @@ syntax = "proto3";
 
 service Communicator {
   // Request to start a conversation
-  rpc InitiateConversation (ConversationControlRequest) returns (ConversationControlReply);
+  rpc InitiateConversation (InitiateRequest) returns (InitiateReply);
   // Request to end a conversation
-  rpc TerminateConversation (ConversationControlRequest) returns (ConversationControlReply);
+  rpc TerminateConversation (TerminateRequest) returns (TerminateReply);
   // Bi-directional stream opened for message transaction.
   // Thinking will just have this open for each conversation
   rpc SendMessage (stream MessageRequest) returns (stream MessageReply);
 }
 
-message ConversationControlRequest {
+message InitiateRequest {
   // Address of the requesting client
   Address address = 1;
   // User client wishes to start conversation with
   User receipient = 2;
 }
 
-message ConversationControlReply {
+message InitiateReply {
   // Success of initialization of conversation
   bool success = 1;
   // Allocated ID for the conversation
   uint32 conversationId = 2;
+}
+
+message TerminateRequest {
+  // Address of the requesting client
+  Address address = 1;
+  // Conversation to terminate
+  uint32 conversationID = 2;
+}
+
+message TerminateReply {
+  // Success of termination
+  bool success = 1;
 }
 
 message MessageRequest {
