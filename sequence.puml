@@ -1,0 +1,23 @@
+@startuml
+group InitiateConversation
+Client -> Server: Initiate Request (room to join)
+Client <- Server: Initiate Response
+end
+note over Client, Server
+<b>SendMessage</b> opens a stream
+with the server and will
+sit in this state to send
+and receive all messages
+end note
+
+group SendMessage
+Client -> Server: Message Request (Stream)
+Server -> Client: Message Reply (Stream)
+end
+
+...Has conversation...
+group TerminateConversation
+Client -> Server: Terminate Request (room to leave)
+Server -> Client: Terminate Reply
+end
+@enduml
