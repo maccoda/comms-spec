@@ -45,7 +45,7 @@ message MessageRequest {
 
 message MessageReply {
   // Stream of the messages written by others
-  repeated Message messages = 2;
+  Message messages = 2;
 }
 
 // NOTE the below are basically type aliasing but will allow for extra data to
